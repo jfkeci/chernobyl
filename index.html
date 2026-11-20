@@ -5,645 +5,361 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Chernobyl — Reactor 4, 26 April 1986</title>
 <style>
-  html,body{margin:0;height:100%;background:#05070c;overflow:hidden;font-family:ui-monospace,Menlo,Consolas,monospace;color:#d8e0e8}
+  html,body{margin:0;height:100%;background:#05070c;color:#e8e6df;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow:hidden}
   canvas{display:block}
-  #hud{position:fixed;top:18px;left:20px;pointer-events:none;text-shadow:0 0 8px #000}
-  #hud h1{margin:0 0 4px;font-size:15px;letter-spacing:.25em;color:#ffb347;font-weight:600}
-  #clock{font-size:44px;font-weight:700;letter-spacing:.04em}
-  .row{font-size:13px;margin-top:6px;opacity:.9}
-  .row b{display:inline-block;min-width:150px;color:#8fa3b8;font-weight:400}
-  #power{color:#7fd4ff;font-size:20px}
-  #bar{width:260px;height:6px;background:#1a222c;margin-top:6px;border-radius:3px;overflow:hidden}
-  #barf{height:100%;width:1%;background:#7fd4ff}
-  #cap{position:fixed;left:0;right:0;bottom:92px;text-align:center;font-size:19px;padding:0 24px;text-shadow:0 0 10px #000,0 0 3px #000;font-family:Georgia,serif;transition:opacity .4s}
-  #ctl{position:fixed;left:0;right:0;bottom:22px;display:flex;gap:12px;justify-content:center;align-items:center}
-  button{background:#141c26;color:#e6edf3;border:1px solid #34485c;border-radius:6px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}
-  button:hover{background:#1f2c3b}
-  input[type=range]{width:min(52vw,640px);accent-color:#ffb347}
-  #hint{position:fixed;top:18px;right:20px;font-size:11px;opacity:.55;text-align:right;line-height:1.6}
-  #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none}
-  .ov{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at center,rgba(5,7,12,.72),rgba(5,7,12,.96));z-index:5;padding:24px}
-  .ov h2{font-family:Georgia,serif;font-size:clamp(34px,6vw,72px);margin:0;letter-spacing:.08em;color:#fff;font-weight:400}
-  .ov .sub{letter-spacing:.35em;color:#ffb347;font-size:13px;margin:14px 0 30px}
-  .ov p{font-family:Georgia,serif;font-size:17px;line-height:1.7;max-width:640px;margin:0 0 26px;color:#c4ced8}
-  .ov button{font-size:15px;padding:12px 30px;border-color:#ffb347;color:#ffb347;letter-spacing:.2em}
-  #end{display:none;background:rgba(5,7,12,.78)}
-  #end .facts{display:flex;gap:38px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
-  #end .facts div{font-size:12px;color:#8fa3b8;max-width:170px;line-height:1.5}
-  #end .facts b{display:block;font-size:34px;color:#fff;font-family:Georgia,serif;font-weight:400}
-  #slow{position:fixed;top:50%;right:26px;font-size:12px;letter-spacing:.4em;color:#ffb347;opacity:0;transition:opacity .25s;writing-mode:vertical-rl}
-  #views{position:fixed;right:20px;top:74px;display:flex;flex-direction:column;gap:6px;z-index:3}
-  #views button{text-align:left;padding:6px 12px;font-size:12px;opacity:.75}
-  #views button.on{border-color:#ffb347;color:#ffb347;opacity:1}
-  #views button i{font-style:normal;opacity:.5;margin-right:8px}
-  #slow{right:auto;left:26px}
-  #sat{position:fixed;inset:0;pointer-events:none;display:none;color:#9dffb0;font-size:11px;letter-spacing:.2em;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6))}
-  #sat:before,#sat:after{content:'';position:absolute;background:rgba(157,255,176,.35)}
-  #sat:before{left:50%;top:calc(50% - 40px);width:1px;height:80px}
-  #sat:after{top:50%;left:calc(50% - 40px);height:1px;width:80px}
-  #sat span{position:absolute;top:20px;left:0;right:0;text-align:center;text-shadow:0 0 6px #000}
-  #sat em{position:absolute;bottom:130px;left:0;right:0;text-align:center;font-style:normal;opacity:.7}
-  #inui{display:none}
-  #incap{position:fixed;top:20px;left:50%;transform:translateX(-50%);width:min(560px,46vw);text-align:center;font-size:13px;line-height:1.6;color:#bfe6ff;text-shadow:0 0 8px #000;background:rgba(4,8,14,.55);border:1px solid #1d3346;border-radius:8px;padding:10px 16px}
-  #incap b{display:block;color:#ffb347;letter-spacing:.3em;font-size:11px;margin-bottom:4px;font-weight:400}
-  #inleg{position:fixed;left:20px;bottom:140px;font-size:12px;line-height:2;text-shadow:0 0 6px #000}
-  #inleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:9px;vertical-align:middle}
-  #inleg .r{margin-top:8px;color:#8fa3b8}#inleg .r span{color:#fff}
+  #hud{position:fixed;top:20px;left:24px;pointer-events:none;text-shadow:0 1px 6px #000}
+  #hud h1{margin:0 0 2px;font-size:15px;letter-spacing:.28em;font-weight:600;color:#f3c64b}
+  #hud .sub{font-size:11px;letter-spacing:.2em;opacity:.6;margin-bottom:16px}
+  .row{display:flex;gap:28px}
+  .lab{font-size:10px;letter-spacing:.2em;opacity:.55}
+  .val{font-size:30px;font-variant-numeric:tabular-nums;font-weight:600}
+  #pw.hot{color:#ff5a36}
+  #bar{width:260px;height:6px;background:#ffffff1a;margin-top:8px;border-radius:3px;overflow:hidden}
+  #barf{height:100%;width:0;background:linear-gradient(90deg,#4fd16b,#f3c64b 45%,#ff3b1f)}
+  #cap{position:fixed;left:0;right:0;bottom:84px;text-align:center;padding:0 16px;pointer-events:none;text-shadow:0 2px 10px #000}
+  #capt{font-size:13px;letter-spacing:.25em;color:#f3c64b;margin-bottom:6px}
+  #capx{font-family:Georgia,serif;font-size:22px;max-width:820px;margin:0 auto;line-height:1.35;text-wrap:balance}
+  #ctl{position:fixed;left:0;right:0;bottom:22px;display:flex;gap:10px;justify-content:center;align-items:center}
+  button{background:#ffffff14;color:#e8e6df;border:1px solid #ffffff33;padding:9px 16px;font:inherit;font-size:12px;letter-spacing:.12em;border-radius:4px;cursor:pointer}
+  button:hover{background:#ffffff2a}
+  button.on{background:#f3c64b;color:#111;border-color:#f3c64b}
+  #tl{width:min(340px,30vw);height:4px;background:#ffffff22;border-radius:2px;overflow:hidden}
+  #tlf{height:100%;width:0;background:#f3c64b}
+  #flash{position:fixed;inset:0;background:#fff3d6;opacity:0;pointer-events:none}
+  #note{position:fixed;top:20px;right:24px;font-size:10px;letter-spacing:.14em;opacity:.45;text-align:right;line-height:1.7}
 </style>
-<script type="importmap">
-{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
-</script>
 </head>
 <body>
 <div id="hud">
   <h1>CHERNOBYL NPP · UNIT 4</h1>
-  <div id="clock">01:23:34</div>
-  <div class="row"><b>THERMAL POWER</b><span id="power">200 MW</span></div>
-  <div id="bar"><div id="barf"></div></div>
-  <div class="row"><b>STATUS</b><span id="status">TURBINE RUNDOWN TEST</span></div>
-  <div class="row"><b>DOSIMETER</b><span id="dose">0.00002 R/h</span></div>
+  <div class="sub">PRIPYAT, UKRAINIAN SSR · 26 APRIL 1986</div>
+  <div class="row">
+    <div><div class="lab">LOCAL TIME</div><div class="val" id="clk">01:23:36</div></div>
+    <div><div class="lab">THERMAL POWER</div><div class="val" id="pw">200 MW</div><div id="bar"><div id="barf"></div></div></div>
+  </div>
 </div>
-<div id="hint">drag · orbit &nbsp; scroll · zoom<br>space · play / pause</div>
-<div id="cap"></div>
+<div id="note">DRAG TO ORBIT · SCROLL TO ZOOM<br>ARTISTIC RECONSTRUCTION</div>
+<div id="cap"><div id="capt"></div><div id="capx"></div></div>
 <div id="ctl">
-  <button id="play">❚❚ Pause</button>
-  <input id="seek" type="range" min="0" max="34" step="0.01" value="0">
-  <button id="replay">↺ Replay</button>
-  <button id="speed">1×</button>
-  <button id="mute">🔊 Sound</button>
+  <button id="replay">⟲ REPLAY</button>
+  <button id="pause">❚❚ PAUSE</button>
+  <button id="slow">SLOW-MO</button>
+  <div id="tl"><div id="tlf"></div></div>
 </div>
-<div id="sat"><span>OVERHEAD VIEW · 51.389°N 30.099°E · N ↑</span><em id="satc"></em></div>
-<div id="views">
-  <button data-v="directed"><i>1</i>🎬 Directed</button>
-  <button data-v="satellite"><i>2</i>🛰 Satellite</button>
-  <button data-v="heli"><i>3</i>🚁 Helicopter</button>
-  <button data-v="ground"><i>4</i>🧍 Eyewitness</button>
-  <button data-v="core"><i>5</i>☢ Reactor hall</button>
-  <button data-v="town"><i>6</i>🏙 From Pripyat</button>
-  <button data-v="free"><i>7</i>🖐 Free cam</button>
-  <button data-v="inside"><i>8</i>⚛ Inside the core</button>
-</div>
-<div id="inui">
-  <div id="incap"><b>INSIDE THE CORE</b><span id="intxt"></span></div>
-  <div id="inleg">
-    <div><i style="background:#3d7dff"></i>Fuel channels (colour = heat)</div>
-    <div><i style="background:#6f8f78"></i>Control rod — boron absorber</div>
-    <div><i style="background:#5a5d6b"></i>Control rod — graphite tip</div>
-    <div><i style="background:#9fe8ff;border-radius:50%"></i>Neutrons</div>
-    <div><i style="background:#fff;border-radius:50%"></i>Steam bubbles</div>
-    <div class="r">ROD INSERTION <span id="inrod"></span></div>
-    <div class="r" style="margin-top:0">STEAM IN COOLANT <span id="invoid"></span></div>
-    <div class="r" style="margin-top:0">FUEL TEMPERATURE <span id="intemp"></span></div>
-  </div>
-</div>
-<div id="slow">SLOW MOTION</div>
 <div id="flash"></div>
-<div id="intro" class="ov">
-  <h2>CHERNOBYL</h2>
-  <div class="sub">REACTOR 4 · 26 APRIL 1986 · 01:23</div>
-  <p>A reconstruction of the forty seconds in which a safety test became the worst nuclear accident in history.</p>
-  <button id="begin">▶ BEGIN</button>
-  <div class="sub" style="margin-top:22px;opacity:.6;letter-spacing:.15em">sound on · drag any time to take the camera</div>
-</div>
-<div id="end" class="ov">
-  <div class="sub">IN THE AFTERMATH</div>
-  <div class="facts">
-    <div><b>2</b>workers killed on the night of the explosion</div>
-    <div><b>28</b>more dead of acute radiation sickness within months</div>
-    <div><b>~116,000</b>people evacuated from the surrounding zone in 1986</div>
-    <div><b>30 km</b>exclusion zone, still in place today</div>
-  </div>
-  <button id="again">↺ WATCH AGAIN</button>
-</div>
 
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
 <script type="module">
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-const T_AZ5 = 6, T_E1 = 10, T_E2 = 12, T_END = 34;
-const rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
-const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-const lerp = (a, b, k) => a + (b - a) * k;
+const R = (a=1,b)=> b===undefined ? Math.random()*a : a+Math.random()*(b-a);
+const RS = (a=1)=> (Math.random()*2-1)*a;
+const $ = id=>document.getElementById(id);
 
-// ---------- renderer ----------
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
+// ---------- renderer / scene ----------
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05070c);
-scene.fog = new THREE.FogExp2(0x05070c, 0.0028);
-const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.5, 3000);
-camera.position.set(95, 55, 120);
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 26, 0);
-controls.enableDamping = true;
-
-controls.maxPolarAngle = Math.PI * 0.495; controls.minDistance = 40; controls.maxDistance = 500;
-
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.9, 0.6, 0.75);
-composer.addPass(bloom);
-composer.addPass(new OutputPass());
-
+scene.fog = new THREE.FogExp2(0x05070c, 0.0014);
 const world = new THREE.Group(); scene.add(world);
 
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.5, 3000);
+camera.position.set(150,70,170);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0,45,0);
+controls.enableDamping = true;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+controls.maxPolarAngle = Math.PI/2-0.03; controls.minDistance = 60; controls.maxDistance = 600;
+
 // ---------- lights ----------
-scene.add(new THREE.HemisphereLight(0x33425a, 0x0a0c10, 0.9));
-const moon = new THREE.DirectionalLight(0x8fa8d0, 0.7); moon.position.set(-80, 120, 60); scene.add(moon);
-const coreLight = new THREE.PointLight(0x55aaff, 0, 400, 1.6); coreLight.position.set(0, 30, 0); world.add(coreLight);
-const flashLight = new THREE.PointLight(0xffe0a0, 0, 1200, 1.2); flashLight.position.set(0, 50, 0); world.add(flashLight);
+scene.add(new THREE.HemisphereLight(0x5a6c9c, 0x0a0a0c, 0.9));
+const moon = new THREE.DirectionalLight(0x8fa6d8, 0.9); moon.position.set(-200,300,150); scene.add(moon);
+const fireLight = new THREE.PointLight(0xff7a2a, 0, 900, 1); fireLight.position.set(0,58,0); world.add(fireLight);
+const coreLight = new THREE.PointLight(0xffa040, 0, 300, 1); coreLight.position.set(0,34,0); world.add(coreLight);
 
 // ---------- stars ----------
 {
-  const g = new THREE.BufferGeometry(), p = [];
-  for (let i = 0; i < 1500; i++) {
-    const v = new THREE.Vector3().randomDirection(); v.y = Math.abs(v.y); v.multiplyScalar(1500);
-    p.push(v.x, v.y, v.z);
-  }
-  g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xaabbdd, size: 2.2, sizeAttenuation: false, fog: false })));
+  const n=1800, p=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ const th=R(Math.PI*2), ph=Math.acos(R(0.02,1)), r=1400;
+    p[i*3]=r*Math.sin(ph)*Math.cos(th); p[i*3+1]=r*Math.cos(ph); p[i*3+2]=r*Math.sin(ph)*Math.sin(th); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xcfd8ff,size:2.2,sizeAttenuation:false,fog:false,transparent:true,opacity:.8})));
 }
+
+// ---------- textures ----------
+function windowTex(cols,rows,lit=.35){
+  const c=document.createElement('canvas'); c.width=cols*16; c.height=rows*16; const x=c.getContext('2d');
+  x.fillStyle='#3a3c40'; x.fillRect(0,0,c.width,c.height);
+  for(let i=0;i<4000;i++){ x.fillStyle=`rgba(${R()<.5?0:255},${R()<.5?0:255},${R()<.5?0:255},.03)`; x.fillRect(R(c.width),R(c.height),R(8),R(30)); }
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
+    x.fillStyle = R()<lit ? `hsl(${R(38,52)},90%,${R(55,75)}%)` : '#16181c';
+    x.fillRect(q*16+4,r*16+4,8,7);
+  }
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+}
+function bmat(cols,rows,lit){ const t=windowTex(cols,rows,lit);
+  return new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.55,roughness:.9}); }
+const concrete = new THREE.MeshStandardMaterial({color:0x55585e,roughness:.95});
+const dark = new THREE.MeshStandardMaterial({color:0x2b2d31,roughness:1});
 
 // ---------- site ----------
-const concrete = new THREE.MeshStandardMaterial({ color: 0x6d7379, roughness: 0.95 });
-const darkC = new THREE.MeshStandardMaterial({ color: 0x4a4f55, roughness: 0.95 });
-const box = (w, h, d, x, y, z, m = concrete) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); world.add(o); return o; };
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(4000,4000), new THREE.MeshStandardMaterial({color:0x14171a,roughness:1}));
+ground.rotation.x=-Math.PI/2; world.add(ground);
+function box(w,h,d,x,y,z,m){ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y+h/2,z); world.add(b); return b; }
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), new THREE.MeshStandardMaterial({ color: 0x1a1d20, roughness: 1 }));
-ground.rotation.x = -Math.PI / 2; world.add(ground);
+const H=50, W=36;                       // reactor hall of unit 4 (open box, roof = debris slabs)
+const hallMat = bmat(10,12,.12);
+box(W,H,2, 0,0, W/2-1, hallMat); box(W,H,2, 0,0,-W/2+1, hallMat);
+box(2,H,W-4, W/2-1,0,0, hallMat); box(2,H,W-4,-W/2+1,0,0, hallMat);
+box(W-4,18,W-4,0,0,0,dark);              // reactor vault floor
+box(70,30,60, 0,0,0, bmat(18,7,.3)).position.x=0; // lower block around hall
+// unit 3 + shared auxiliary block with vent stack
+box(40,34,60,-58,0,0,bmat(10,8,.4));
+box(W,H,W,-98,0,0,bmat(10,12,.2));
+box(70,30,60,-98,0,0,bmat(18,7,.4));
+// turbine hall (long) in front
+box(260,22,44,-50,0,58,bmat(60,5,.45));
+box(260,3,46,-50,22,58,dark);
+// deaerator stack
+box(240,36,10,-50,0,32,bmat(50,8,.3));
+// small outbuildings
+for(let i=0;i<8;i++) box(R(14,34),R(6,14),R(14,30), RS(260), 0, -90-R(120), bmat(6,3,.5));
+for(let i=0;i<5;i++) box(R(14,30),R(6,12),R(14,30), 120+R(140), 0, RS(160), bmat(6,3,.5));
 
-box(46, 18, 38, 0, 9, 0);                         // unit 4 lower block
-box(46, 30, 38, -74, 15, 0);                      // unit 3
-box(28, 14, 30, -37, 7, 0, darkC);                // auxiliary block between units
-box(170, 14, 24, -37, 7, 34, darkC);              // turbine hall
-box(20, 10, 16, 34, 5, -6, darkC);
-// site detail (roads, cooling pond, outbuildings)
-{
-  const flat = (w, d, x, z, c, y = .3) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ color: c, roughness: .9 })); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); world.add(m); return m; };
-  flat(900, 9, 0, 78, 0x2c3034); flat(9, 500, 75, -20, 0x2c3034); flat(9, 300, -150, 60, 0x2c3034); flat(260, 6, -40, -50, 0x282b2f);
-  flat(330, 150, -40, 16, 0x222629, .15);                       // plant apron
-  const pond = flat(700, 190, 60, -190, 0x0a1826); pond.material.roughness = .25; pond.material.metalness = .6;
-  flat(700, 14, 60, -84, 0x0d1d2e).material.roughness = .3;      // intake canal
-  for (let i = 0; i < 16; i++) { const w = rnd(10, 30), d = rnd(8, 20), hh = rnd(4, 10); box(w, hh, d, rnd(-230, 230), hh / 2, rnd(96, 190), i % 2 ? darkC : concrete); }
-  for (let i = 0; i < 9; i++) { const l = new THREE.Mesh(new THREE.SphereGeometry(.7), new THREE.MeshBasicMaterial({ color: 0xffd98a })); l.position.set(-200 + i * 50, 7, 72); world.add(l); }
+// vent stack (red/white bands + platforms)
+const stack = new THREE.Group(); stack.position.set(-58,34,-6); world.add(stack);
+for(let i=0;i<10;i++){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.2,8,24,1,true),
+    new THREE.MeshStandardMaterial({color:i%2?0xd9d6cf:0xa8281e,roughness:.8,side:THREE.DoubleSide}));
+  m.position.y=4+i*8; stack.add(m);
+  if(i%2===0){ const r=new THREE.Mesh(new THREE.TorusGeometry(6,.35,6,24),concrete); r.rotation.x=Math.PI/2; r.position.y=i*8+8; stack.add(r); }
 }
-// windows strip on turbine hall
-const winMat = new THREE.MeshBasicMaterial({ color: 0xffd98a });
-for (let i = 0; i < 20; i++) { const w = box(4, 1.6, 0.3, -115 + i * 8.2, 9, 46.1, winMat); w.userData.win = 1; }
+for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; const l=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,80,5),concrete);
+  l.position.set(Math.cos(a)*6,40,Math.sin(a)*6); stack.add(l); }
+const beacon = new THREE.Mesh(new THREE.SphereGeometry(.9,8,8), new THREE.MeshBasicMaterial({color:0xff2020}));
+beacon.position.y=81; stack.add(beacon);
 
-// reactor hall (upper) – translucent cutaway so the core is visible
-const hallMat = new THREE.MeshStandardMaterial({ color: 0x8a9199, roughness: 0.9, transparent: true, opacity: 0.28, depthWrite: false });
-const hall = box(40, 16, 32, 0, 26, 0, hallMat);
-const hallEdges = new THREE.LineSegments(new THREE.EdgesGeometry(hall.geometry), new THREE.LineBasicMaterial({ color: 0xaab4be }));
-hall.add(hallEdges);
-// ruined walls shown after the blast
-const ruins = new THREE.Group(); world.add(ruins);
-for (let i = 0; i < 26; i++) {
-  const side = i % 4, h = rnd(2, 11), w = rnd(3, 7);
-  const m = new THREE.Mesh(new THREE.BoxGeometry(side < 2 ? w : 1.2, h, side < 2 ? 1.2 : w), concrete);
-  const u = rnd(-1, 1);
-  m.position.set(side < 2 ? u * 19 : (side === 2 ? -20 : 20), 18 + h / 2, side < 2 ? (side ? 16 : -16) : u * 15);
-  m.rotation.z = rnd(-.12, .12); ruins.add(m);
-}
-ruins.visible = false;
-
-// vent stack (red / white)
-{
-  const red = new THREE.MeshStandardMaterial({ color: 0xa83228, roughness: .8 }), wht = new THREE.MeshStandardMaterial({ color: 0xd8d8d2, roughness: .8 });
-  for (let i = 0; i < 10; i++) {
-    const s = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 8, 20), i % 2 ? wht : red);
-    s.position.set(-37, 18 + i * 8, -2); world.add(s);
-  }
-  const fm = new THREE.MeshStandardMaterial({ color: 0x8a8f94, wireframe: true });
-  const f = new THREE.Mesh(new THREE.CylinderGeometry(5, 7, 60, 8, 8, true), fm); f.position.set(-37, 44, -2); world.add(f);
-  const lamp = new THREE.Mesh(new THREE.SphereGeometry(.8), new THREE.MeshBasicMaterial({ color: 0xff2200 })); lamp.position.set(-37, 99, -2); world.add(lamp);
-}
-
-// core + lid
-const coreMat = new THREE.MeshBasicMaterial({ color: 0x2277ff });
-const core = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 7, 32), coreMat); core.position.set(0, 21.5, 0); world.add(core);
-const lid = new THREE.Mesh(new THREE.CylinderGeometry(8.5, 8.5, 1.6, 32), new THREE.MeshStandardMaterial({ color: 0x3c4046, roughness: .7, metalness: .5 }));
+// reactor core + upper biological shield ("Elena")
+const coreMat = new THREE.MeshBasicMaterial({color:0x331100});
+const core = new THREE.Mesh(new THREE.CylinderGeometry(9,9,16,32), coreMat); core.position.y=27; world.add(core);
+const lid = new THREE.Mesh(new THREE.CylinderGeometry(10.5,10.5,3,32), new THREE.MeshStandardMaterial({color:0x6a6d73,roughness:.7,metalness:.3,emissive:0xff4400,emissiveIntensity:0}));
 world.add(lid);
-// rods on the lid
-for (let i = 0; i < 40; i++) {
-  const a = rnd(Math.PI * 2), r = Math.sqrt(rnd()) * 7.5;
-  const rod = new THREE.Mesh(new THREE.BoxGeometry(.35, 1.2, .35), darkC); rod.position.set(Math.cos(a) * r, 1.2, Math.sin(a) * r); lid.add(rod);
+const lidS = {vel:new THREE.Vector3(), rv:new THREE.Vector3(), fly:false, done:false};
+
+// ---------- debris (instanced rigid chunks) ----------
+const dummy = new THREE.Object3D(), G=-32;
+class Debris{
+  constructor(n,mat){ this.n=n; this.mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,n);
+    this.mesh.frustumCulled=false; world.add(this.mesh); this.next=0;
+    this.it=[...Array(n)].map(()=>({p:new THREE.Vector3(),v:new THREE.Vector3(),r:new THREE.Euler(),rv:new THREE.Vector3(),s:new THREE.Vector3(),sleep:true,age:0})); }
+  hideAll(){ for(const d of this.it){ d.s.set(0,0,0); d.sleep=true; d.age=0; } this.next=0; this.sync(true); }
+  spawn(p,v,s){ const d=this.it[this.next++ % this.n]; d.p.copy(p); d.v.copy(v); d.s.copy(s); d.r.set(R(6),R(6),R(6)); d.rv.set(RS(6),RS(6),RS(6)); d.sleep=false; d.age=0; return d; }
+  update(dt){ for(const d of this.it){ d.age+=dt; if(d.sleep) continue;
+      d.v.y+=G*dt; d.p.addScaledVector(d.v,dt); d.r.x+=d.rv.x*dt; d.r.y+=d.rv.y*dt; d.r.z+=d.rv.z*dt;
+      const fl=Math.max(d.s.x,d.s.y,d.s.z)*.35;
+      if(d.p.y<fl){ d.p.y=fl; d.v.y*=-.28; d.v.x*=.55; d.v.z*=.55; d.rv.multiplyScalar(.45);
+        if(d.v.lengthSq()<6){ d.sleep=true; } } }
+    this.sync(); }
+  sync(){ this.it.forEach((d,i)=>{ dummy.position.copy(d.p); dummy.rotation.copy(d.r); dummy.scale.copy(d.s); dummy.updateMatrix(); this.mesh.setMatrixAt(i,dummy.matrix); });
+    this.mesh.instanceMatrix.needsUpdate=true; }
+}
+const NS=6, slabN=NS*NS;
+const rubble = new Debris(slabN+520, new THREE.MeshStandardMaterial({color:0x6b6e74,roughness:.95}));
+const graphite = new Debris(340, new THREE.MeshBasicMaterial({color:0xffffff}));
+const gcol = new THREE.Color();
+
+function resetRoof(){
+  rubble.hideAll(); graphite.hideAll();
+  for(let i=0;i<NS;i++)for(let j=0;j<NS;j++){ const d=rubble.it[rubble.next++];
+    d.p.set((i-NS/2+.5)*W/NS, H+.75, (j-NS/2+.5)*W/NS); d.s.set(W/NS-.05,1.5,W/NS-.05); d.r.set(0,0,0); d.v.set(0,0,0); d.sleep=true; }
+  rubble.sync();
+}
+function blowRoof(inner,power){
+  for(let k=0;k<slabN;k++){ const d=rubble.it[k]; if(!d.sleep||d.p.y<H) continue;
+    const dist=Math.hypot(d.p.x,d.p.z); if(inner && dist>11) continue;
+    d.sleep=false; d.v.set(d.p.x*R(.6,1.6)+RS(4), R(22,48)*power, d.p.z*R(.6,1.6)+RS(4)); d.rv.set(RS(5),RS(5),RS(5)); }
+}
+const tmpP=new THREE.Vector3(), tmpV=new THREE.Vector3(), tmpS=new THREE.Vector3();
+function burst(sys,n,power,smin,smax){
+  for(let i=0;i<n;i++){ const a=R(Math.PI*2), up=R(.25,1), sp=R(12,62)*power, h=Math.sqrt(1-up*up*.8);
+    tmpP.set(RS(8),R(36,50),RS(8)); tmpV.set(Math.cos(a)*h*sp*.75, up*sp, Math.sin(a)*h*sp*.75);
+    const s=R(smin,smax); tmpS.set(s*R(.5,1.6),s*R(.4,1),s*R(.5,1.6)); sys.spawn(tmpP,tmpV,tmpS); }
 }
 
-// ---------- fx: fireballs, shockwave, beam ----------
-const addMat = (c) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
-const fire1 = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), addMat(0xfff0d0)); world.add(fire1);
-const fire2 = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), addMat(0xffa040)); world.add(fire2);
-const ring = new THREE.Mesh(new THREE.RingGeometry(.9, 1, 96), addMat(0xffe8c0)); ring.rotation.x = -Math.PI / 2; ring.position.y = .4; ring.material.side = THREE.DoubleSide; world.add(ring);
-const ring2 = ring.clone(); ring2.material = addMat(0xffc890); ring2.material.side = THREE.DoubleSide; world.add(ring2);
-const beam = new THREE.Mesh(new THREE.CylinderGeometry(9, 5, 500, 32, 1, true), addMat(0x3f8cff)); beam.material.side = THREE.DoubleSide; beam.position.set(0, 270, 0); world.add(beam);
-const beamCore = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 2.5, 500, 24, 1, true), addMat(0x9fd0ff)); beamCore.material.side = THREE.DoubleSide; beamCore.position.set(0, 270, 0); world.add(beamCore);
-
-// ---------- debris (ballistic, analytic => scrubbable) ----------
-const G = 22;
-function makeDebris(n, t0, mat, sizeR, speedR, glow) {
-  const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, n);
-  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.frustumCulled = false;
-  const d = [];
-  for (let i = 0; i < n; i++) {
-    const a = rnd(Math.PI * 2), up = rnd(.35, 1), sp = rnd(...speedR) * (Math.random() < .12 ? 1.6 : 1);
-    const h = Math.sqrt(1 - up * up * .8);
-    const p0 = new THREE.Vector3(rnd(-14, 14), rnd(22, 34), rnd(-11, 11));
-    const v = new THREE.Vector3(Math.cos(a) * h * sp, up * sp, Math.sin(a) * h * sp);
-    const tl = (v.y + Math.sqrt(v.y * v.y + 2 * G * (p0.y - .4))) / G;
-    d.push({ p0, v, tl, t0: t0 + rnd(.25), s: new THREE.Vector3(rnd(...sizeR), rnd(...sizeR) * .6, rnd(...sizeR)), ax: new THREE.Vector3().randomDirection(), spin: rnd(2, 9), heat: rnd(.6, 1) });
-    if (glow) mesh.setColorAt(i, new THREE.Color(1, .4, .1));
-  }
-  world.add(mesh); return { mesh, d, glow };
+// ---------- particles ----------
+const pUni = {uScale:{value:innerHeight*.9}};
+class PSys{
+  constructor(n,blend,upd){ this.n=n; this.upd=upd; this.i=0;
+    this.pos=new Float32Array(n*3); this.col=new Float32Array(n*4); this.size=new Float32Array(n);
+    this.vel=new Float32Array(n*3); this.life=new Float32Array(n); this.max=new Float32Array(n).fill(1); this.s0=new Float32Array(n); this.k=new Float32Array(n);
+    const g=this.g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(this.pos,3));
+    g.setAttribute('aCol',new THREE.BufferAttribute(this.col,4));
+    g.setAttribute('aSize',new THREE.BufferAttribute(this.size,1));
+    const m=new THREE.ShaderMaterial({uniforms:pUni,transparent:true,depthWrite:false,blending:blend,
+      vertexShader:`attribute vec4 aCol; attribute float aSize; varying vec4 vC; uniform float uScale;
+        void main(){ vC=aCol; vec4 mv=modelViewMatrix*vec4(position,1.); gl_PointSize=aSize*uScale/-mv.z; gl_Position=projectionMatrix*mv; }`,
+      fragmentShader:`varying vec4 vC; void main(){ float d=length(gl_PointCoord-.5); float a=smoothstep(.5,.05,d); gl_FragColor=vec4(vC.rgb,vC.a*a); }`});
+    this.pts=new THREE.Points(g,m); this.pts.frustumCulled=false; world.add(this.pts); }
+  emit(x,y,z,vx,vy,vz,life,size,kind=0){ const i=this.i=(this.i+1)%this.n;
+    this.pos[i*3]=x;this.pos[i*3+1]=y;this.pos[i*3+2]=z; this.vel[i*3]=vx;this.vel[i*3+1]=vy;this.vel[i*3+2]=vz;
+    this.life[i]=0; this.max[i]=life; this.s0[i]=size; this.k[i]=kind; }
+  clear(){ this.life.fill(1e9); this.size.fill(0); this.col.fill(0); }
+  update(dt){ const {pos,vel,life,max,n}=this;
+    for(let i=0;i<n;i++){ if(life[i]>=max[i]){ if(this.size[i]){this.size[i]=0;this.col[i*4+3]=0;} continue; }
+      life[i]+=dt; this.upd(this,i,life[i]/max[i],dt);
+      pos[i*3]+=vel[i*3]*dt; pos[i*3+1]+=vel[i*3+1]*dt; pos[i*3+2]+=vel[i*3+2]*dt;
+      if(pos[i*3+1]<.3){pos[i*3+1]=.3; vel[i*3+1]*=-.2;} }
+    for(const a of ['position','aCol','aSize']) this.g.attributes[a].needsUpdate=true; }
 }
-const debris = [
-  makeDebris(380, T_E1, concrete, [.6, 2.6], [12, 40], false),
-  makeDebris(420, T_E2, new THREE.MeshBasicMaterial({ color: 0xffffff }), [.4, 1.3], [16, 58], true),
-];
-const dummy = new THREE.Object3D(), col = new THREE.Color();
-function updateDebris(t) {
-  for (const { mesh, d, glow } of debris) {
-    for (let i = 0; i < d.length; i++) {
-      const o = d[i], tau = t - o.t0;
-      if (tau < 0) { dummy.scale.setScalar(0); dummy.position.set(0, -50, 0); }
-      else {
-        const k = Math.min(tau, o.tl);
-        dummy.position.set(o.p0.x + o.v.x * k, Math.max(.4, o.p0.y + o.v.y * k - .5 * G * k * k), o.p0.z + o.v.z * k);
-        dummy.quaternion.setFromAxisAngle(o.ax, k * o.spin);
-        dummy.scale.copy(o.s);
-      }
-      dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
-      if (glow) {
-        const h = clamp(1.15 - Math.max(0, tau) / 26) * o.heat * (.85 + .15 * Math.sin(t * 9 + i));
-        mesh.setColorAt(i, col.setRGB(2.2 * h, .75 * h * h, .12 * h * h));
-      }
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-    if (glow) mesh.instanceColor.needsUpdate = true;
-  }
-}
-
-// ---------- particles (smoke + sparks), analytic ----------
-const pShader = (blend) => new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false, blending: blend,
-  uniforms: { uScale: { value: innerHeight * .9 } },
-  vertexShader: `attribute float aSize; attribute vec4 aColor; varying vec4 vC; uniform float uScale;
-    void main(){ vC=aColor; vec4 mv=modelViewMatrix*vec4(position,1.); gl_PointSize=aSize*uScale/max(1.,-mv.z); gl_Position=projectionMatrix*mv; }`,
-  fragmentShader: `varying vec4 vC; void main(){ float d=length(gl_PointCoord-.5); float a=smoothstep(.5,.05,d); if(a*vC.a<.004) discard; gl_FragColor=vec4(vC.rgb,vC.a*a); }`
+const smoke = new PSys(5000, THREE.NormalBlending, (s,i,k,dt)=>{
+  const dr=1-1.1*dt; s.vel[i*3]=s.vel[i*3]*dr+5*dt; s.vel[i*3+2]*=dr; s.vel[i*3+1]=s.vel[i*3+1]*dr+7*dt;
+  const base=s.k[i], hot=Math.max(0,1-k*5)*(base<.5?1:0);
+  s.col[i*4]=base+hot*1.0; s.col[i*4+1]=base+hot*.35; s.col[i*4+2]=base+hot*.05;
+  s.col[i*4+3]=Math.sin(Math.min(1,k)*Math.PI)**.6*(base<.5?.6:.3);
+  s.size[i]=s.s0[i]*(1+5*k);
 });
-function makePoints(n, blend) {
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
-  g.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(n), 1));
-  g.setAttribute('aColor', new THREE.BufferAttribute(new Float32Array(n * 4), 4));
-  const p = new THREE.Points(g, pShader(blend)); p.frustumCulled = false; world.add(p); return p;
-}
-const NS = 1400, SL = 15;
-const smoke = makePoints(NS, THREE.NormalBlending);
-const sd = Array.from({ length: NS }, () => ({ b: rnd(SL), x: rnd(-10, 10), z: rnd(-8, 8), vx: rnd(-1.5, 1.5), vy: rnd(7, 15), vz: rnd(-1.5, 1.5), w: rnd(.6, 1.4), g: rnd(.07, .2), ph: rnd(6.28) }));
-const NK = 900, KL = 3.2;
-const sparks = makePoints(NK, THREE.AdditiveBlending);
-const kd = Array.from({ length: NK }, () => { const a = rnd(6.28), s = rnd(2, 11); return { b: rnd(KL), x: rnd(-7, 7), z: rnd(-6, 6), vx: Math.cos(a) * s, vz: Math.sin(a) * s, vy: rnd(10, 34), sz: rnd(.5, 1.4) }; });
+const fire = new PSys(6000, THREE.AdditiveBlending, (s,i,k,dt)=>{
+  if(s.k[i]===1){ // sparks: ballistic
+    s.vel[i*3+1]+=G*.6*dt; s.col[i*4]=1; s.col[i*4+1]=.75-.5*k; s.col[i*4+2]=.3-.3*k; s.col[i*4+3]=1-k*k; s.size[i]=s.s0[i]; return; }
+  const dr=1-1.8*dt; s.vel[i*3]*=dr; s.vel[i*3+2]*=dr; s.vel[i*3+1]=s.vel[i*3+1]*dr+14*dt;
+  s.col[i*4]=1; s.col[i*4+1]=Math.max(.12,.95-1.2*k); s.col[i*4+2]=Math.max(.02,.6-2.2*k);
+  s.col[i*4+3]=(1-k)*.55; s.size[i]=s.s0[i]*(1+2.2*k);
+});
 
-function updateParticles(t) {
-  { // smoke
-    const P = smoke.geometry.attributes.position.array, S = smoke.geometry.attributes.aSize.array, C = smoke.geometry.attributes.aColor.array;
-    const since = t - T_E1;
-    for (let i = 0; i < NS; i++) {
-      const o = sd[i]; let age = since - o.b * (since < SL ? .35 : 1);
-      if (age < 0) { S[i] = 0; C[i * 4 + 3] = 0; continue; }
-      age %= SL;
-      const k = age / SL, burst = since < 4 ? 1.8 : 1;
-      P[i * 3] = o.x + o.vx * age + Math.pow(age, 1.5) * 1.5 * o.w + Math.sin(age * .6 + o.ph) * 3;
-      P[i * 3 + 1] = 22 + o.vy * burst * age * (1 - k * .35);
-      P[i * 3 + 2] = o.z + o.vz * age + Math.cos(age * .5 + o.ph) * 3;
-      S[i] = 9 + age * 4.2;
-      const hot = clamp(1 - age / 2.2);
-      C[i * 4] = o.g + hot * 1.6; C[i * 4 + 1] = o.g + hot * .45; C[i * 4 + 2] = o.g * 1.1 + hot * .05;
-      C[i * 4 + 3] = clamp(age * 2) * (1 - k) * .55;
-    }
-    for (const a of Object.values(smoke.geometry.attributes)) a.needsUpdate = true;
-  }
-  { // sparks / fire
-    const P = sparks.geometry.attributes.position.array, S = sparks.geometry.attributes.aSize.array, C = sparks.geometry.attributes.aColor.array;
-    const since = t - T_E2, power = since < 0 ? 0 : lerp(1, .55, clamp(since / 8));
-    for (let i = 0; i < NK; i++) {
-      const o = kd[i]; let age = since - o.b * (since < KL ? .2 : 1);
-      if (age < 0) { S[i] = 0; C[i * 4 + 3] = 0; continue; }
-      age %= KL; const k = age / KL;
-      P[i * 3] = o.x + o.vx * age * power; P[i * 3 + 1] = 21 + o.vy * age * power - 5 * age * age; P[i * 3 + 2] = o.z + o.vz * age * power;
-      S[i] = o.sz * (1.6 - k) * (i % 5 === 0 ? 5 : 1);
-      C[i * 4] = 2.4; C[i * 4 + 1] = lerp(1.3, .25, k); C[i * 4 + 2] = lerp(.5, .02, k); C[i * 4 + 3] = (1 - k) * (i % 5 === 0 ? .5 : 1);
-    }
-    for (const a of Object.values(sparks.geometry.attributes)) a.needsUpdate = true;
-  }
-}
+// ---------- glow effects ----------
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(5,13,520,32,1,true), new THREE.ShaderMaterial({
+  uniforms:{o:{value:0},t:{value:0}}, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+  vertexShader:`varying vec2 vU; void main(){ vU=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader:`varying vec2 vU; uniform float o,t; void main(){ float f=pow(1.-vU.y,1.6); float w=.8+.2*sin(vU.y*40.-t*6.+sin(vU.x*20.));
+    gl_FragColor=vec4(.25,.55,1.,1.)*f*o*.4*w; }`}));
+beam.position.y=40+260; world.add(beam);
+const shock = new THREE.Mesh(new THREE.SphereGeometry(1,32,16), new THREE.MeshBasicMaterial({color:0xffe2b0,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide}));
+shock.position.y=42; world.add(shock);
+const ring = new THREE.Mesh(new THREE.RingGeometry(.86,1,64), new THREE.MeshBasicMaterial({color:0xffc890,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+ring.rotation.x=-Math.PI/2; ring.position.y=.6; world.add(ring);
 
 // ---------- timeline ----------
-const $ = (id) => document.getElementById(id);
-const caps = [
-  [0, 'Unit 4 is running a turbine rundown safety test. The reactor is unstable at low power.'],
-  [T_AZ5, '01:23:40 — AZ-5, the emergency shutdown button, is pressed. Graphite-tipped control rods drive into the core.'],
-  [8, 'Instead of shutting down, power surges past 30,000 MW — roughly ten times the design output.'],
-  [T_E1, 'First explosion. Steam pressure hurls the 2,000-tonne reactor lid through the roof.'],
-  [T_E2, 'Second explosion. The core is torn open; burning graphite is scattered across the site.'],
-  [17, 'Air reaches the exposed core. Witnesses describe a blue glow of ionized air rising into the night.'],
-  [25, '26 April 1986. The graphite fire burns for ten days. Pripyat is evacuated the following afternoon.'],
+const T_AZ5=4, T_SURGE=8, T_X1=10.5, T_X2=13.2, T_END=42;
+const caps=[
+ [0,'01:23:04 — THE TEST','A turbine rundown safety test is under way. Reactor 4 sits at just 200 MW, poisoned by xenon and dangerously unstable.'],
+ [T_AZ5,'01:23:40 — AZ-5','The emergency shutdown button is pressed. Graphite-tipped control rods slide into the core — and briefly add reactivity.'],
+ [T_SURGE,'POWER EXCURSION','Output rockets past 30,000 MW, ten times the design limit. Fuel channels rupture; coolant flashes to steam.'],
+ [T_X1,'FIRST EXPLOSION','A steam explosion hurls the 2,000-tonne upper biological shield through the roof of the reactor hall.'],
+ [T_X2,'SECOND EXPLOSION','Seconds later a far larger blast tears the building open, scattering burning graphite and nuclear fuel across the site.'],
+ [T_X2+7,'THE CORE IS OPEN','Graphite burns at over 1,000 °C. Witnesses describe a pale blue column of ionised air glowing above the ruin.'],
+ [T_X2+16,'AFTERMATH','The fire burns for ten days. Fallout crosses Europe; Pripyat\'s 49,000 residents are evacuated 36 hours later.'],
 ];
-let t = 0, playing = false, speed = 1, cine = true, muted = false;
-const pulse = (tau, dur) => tau < 0 || tau > dur ? 0 : 1 - tau / dur;
+let t=0, speed=1, paused=false, x1=false, x2=false, shake=0, flash=0, fireAmt=0, shockT=-1, shockP=1, capI=-1, accF=0, accS=0;
 
-function apply(t, wall) {
-  const a1 = t - T_E1, a2 = t - T_E2;
-  // HUD
-  const sec = 34 + Math.floor(t);
-  $('clock').textContent = `01:${String(23 + Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
-  let mw = t < T_AZ5 ? 200 + Math.sin(t * 3) * 6 : 200 * Math.exp((Math.min(t, T_E1) - T_AZ5) / (T_E1 - T_AZ5) * Math.log(165));
-  $('power').textContent = a1 >= 0 ? 'OFF SCALE' : Math.round(mw).toLocaleString('en-US') + ' MW';
-  $('power').style.color = $('barf').style.background = mw > 3200 || a1 >= 0 ? '#ff5a3c' : mw > 800 ? '#ffb347' : '#7fd4ff';
-  $('barf').style.width = (a1 >= 0 ? 100 : clamp(Math.log(mw / 150) / Math.log(220)) * 100) + '%';
-  $('status').textContent = a1 >= 0 ? (a2 >= 0 ? 'CORE DESTROYED' : 'CONTAINMENT LOST') : t >= T_AZ5 ? 'AZ-5 · POWER EXCURSION' : 'TURBINE RUNDOWN TEST';
-  $('dose').textContent = a1 < 0 ? '0.00002 R/h' : '3.6 R/h — METER AT MAXIMUM';
-  let c = caps[0][1]; for (const [ct, tx] of caps) if (t >= ct) c = tx; $('cap').textContent = c;
+function boom(p){
+  for(let i=0;i<900*p;i++){ const a=R(Math.PI*2), up=R(-.1,1), sp=R(8,60)*p, h=Math.sqrt(1-up*up*.9);
+    fire.emit(RS(7),R(38,48),RS(7), Math.cos(a)*h*sp, up*sp*1.1, Math.sin(a)*h*sp, R(.8,2.6), R(8,22)*p); }
+  for(let i=0;i<700*p;i++){ const a=R(Math.PI*2), up=R(.1,1), sp=R(25,95)*p, h=Math.sqrt(1-up*up);
+    fire.emit(RS(5),R(40,48),RS(5), Math.cos(a)*h*sp, up*sp, Math.sin(a)*h*sp, R(1.5,5), R(.8,2.2),1); }
+  for(let i=0;i<420*p;i++){ const a=R(Math.PI*2), sp=R(5,34)*p;
+    smoke.emit(RS(9),R(38,52),RS(9), Math.cos(a)*sp, R(8,50)*p, Math.sin(a)*sp, R(6,15), R(10,24), R(.05,.14)); }
+  shake=Math.max(shake,2.2*p); flash=Math.min(1,.55*p); shockT=0; shockP=p;
+}
+function reset(){
+  t=0; x1=x2=false; shake=flash=fireAmt=0; shockT=-1; capI=-1;
+  fire.clear(); smoke.clear(); resetRoof();
+  lid.position.set(0,36.5,0); lid.rotation.set(0,0,0); lidS.fly=false; lidS.done=false; lid.material.emissiveIntensity=0;
+  beam.material.uniforms.o.value=0; shock.material.opacity=0; ring.material.opacity=0;
+}
+reset();
 
-  // core glow
-  const surge = clamp((t - T_AZ5) / (T_E1 - T_AZ5));
-  if (a1 < 0) { coreMat.color.setRGB(lerp(.1, 3, surge * surge), lerp(.4, 2.2, surge * surge), lerp(1.2, 1.6, surge)); coreLight.color.setRGB(lerp(.3, 1, surge), lerp(.6, .8, surge), lerp(1, .6, surge)); coreLight.intensity = 60 + surge * surge * 2500; }
-  else { const f = .8 + .2 * Math.sin(wall * 13) * Math.sin(wall * 7.3); coreMat.color.setRGB(3 * f, 1.1 * f, .25); coreLight.color.setRGB(1, .5, .2); coreLight.intensity = 2600 * f; }
+$('replay').onclick=reset;
+$('pause').onclick=e=>{ paused=!paused; e.target.textContent=paused?'▶ PLAY':'❚❚ PAUSE'; e.target.classList.toggle('on',paused); };
+$('slow').onclick=e=>{ speed=speed===1?.25:1; e.target.classList.toggle('on',speed!==1); };
+addEventListener('keydown',e=>{ if(e.key===' ') $('pause').click(); if(e.key==='r') reset(); if(e.key==='s') $('slow').click(); });
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); pUni.uScale.value=innerHeight*.9; });
 
-  // building
-  hall.visible = a1 < 0; ruins.visible = a1 >= 0;
-  hall.position.x = a1 < 0 ? Math.sin(wall * 60) * surge * surge * .25 : 0;
-  world.children.forEach(o => { if (o.userData.win) o.visible = a1 < 0 || (a1 > .3 && Math.sin(o.position.x * 7) > .4 && a1 < 2 && Math.sin(wall * 40 + o.position.x) > 0); });
-
-  // lid: launched, tumbles, comes to rest tilted on edge in the shaft
-  if (a1 < 0) { lid.position.set(0, 25.8 + surge * surge * Math.abs(Math.sin(wall * 30)) * .5, 0); lid.rotation.set(0, 0, 0); }
-  else { const k = Math.min(a1, 3.55), q = k / 3.55; lid.position.set(k * 1.2, Math.max(23, 25.8 + 39 * k - 11 * k * k), -k * .6); lid.rotation.set(q * (Math.PI * 4 + 1.3), 0, q * .4); }
-
-  // fireballs
-  const f1 = pulse(a1, 1.6), f2 = pulse(a2, 2.6);
-  fire1.material.opacity = f1 * f1; fire1.scale.setScalar(4 + clamp(a1, 0, 2) * 26); fire1.position.set(0, 30 + clamp(a1, 0, 2) * 8, 0);
-  fire2.material.opacity = f2 * f2 * 1.2; fire2.scale.setScalar(6 + clamp(a2, 0, 3) * 24); fire2.position.set(0, 34 + clamp(a2, 0, 3) * 22, 0);
-  const r1 = pulse(a1, 2.2), r2 = pulse(a2, 2.8);
-  ring.material.opacity = r1 * .8; ring.scale.setScalar(10 + Math.max(0, a1) * 85);
-  ring2.material.opacity = r2 * .9; ring2.scale.setScalar(10 + Math.max(0, a2) * 100);
-  flashLight.intensity = (f1 * f1 + f2 * f2 * 1.6) * 60000;
-  $('flash').style.opacity = Math.max(pulse(a1, .5) * .7, pulse(a2, .7) * .9);
-
-  // ionized-air glow
-  const b = clamp((a2 - 2.5) / 4) * (.85 + .15 * Math.sin(wall * 5));
-  beam.material.opacity = b * .13; beamCore.material.opacity = b * .16;
-
-  // shake
-  const sh = (pulse(a1, 1.8) + pulse(a2, 2.4) * 1.5) * 2.2 + (a1 < 0 ? surge * surge * .25 : 0);
-  world.position.set(Math.sin(wall * 71) * sh, Math.sin(wall * 93) * sh * .6, Math.cos(wall * 57) * sh);
-
-  bloom.strength = .9 + (f1 + f2) * .9;
-  updateDebris(t); updateParticles(t);
+function power(){
+  if(t<T_AZ5) return 200+Math.sin(t*3)*4;
+  if(t<T_SURGE) return 200+330*((t-T_AZ5)/(T_SURGE-T_AZ5))**2;
+  if(t<T_X1) return 530*Math.pow(33000/530,(t-T_SURGE)/(T_X1-T_SURGE));
+  return -1;
 }
 
-// ---------- inside-the-core simulation (own scene, same timeline) ----------
-const inScene = new THREE.Scene(); inScene.background = new THREE.Color(0x020308);
-const inCam = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, .1, 3000);
-addEventListener('resize', () => { inCam.aspect = innerWidth / innerHeight; inCam.updateProjectionMatrix(); });
-const CH = 14, SEG = 7, fuelXZ = [], rodXZ = [];
-for (let i = -7; i <= 7; i++) for (let j = -7; j <= 7; j++) {
-  if (i * i + j * j > 53) continue;
-  (((i % 3) + 3) % 3 === 0 && ((j % 3) + 3) % 3 === 0 ? rodXZ : fuelXZ).push([i * 2, j * 2]);
-}
-const basic = (c, o) => new THREE.MeshBasicMaterial(Object.assign({ color: c }, o));
-const fuel = new THREE.InstancedMesh(new THREE.CylinderGeometry(.4, .4, CH / SEG - .12, 8), basic(0xffffff), fuelXZ.length * SEG);
-fuel.frustumCulled = false; inScene.add(fuel);
-const fd = [];
-fuelXZ.forEach(([x, z]) => { for (let s = 0; s < SEG; s++) {
-  const y = -CH / 2 + (s + .5) * CH / SEG, a = Math.atan2(z, x) + rnd(-.6, .6), sp = rnd(4, 16);
-  fd.push({ p: new THREE.Vector3(x, y, z), v: new THREE.Vector3(Math.cos(a) * sp, rnd(4, 34), Math.sin(a) * sp), gone: Math.random() < .62, ph: rnd(6.28), ax: new THREE.Vector3(rnd(-1, 1), 0, rnd(-1, 1)).normalize(), tilt: rnd(.1, .7), yN: (y + CH / 2) / CH });
-  fuel.setColorAt(fd.length - 1, new THREE.Color(0x2255ff));
-} });
-const absorb = new THREE.InstancedMesh(new THREE.CylinderGeometry(.5, .5, CH, 8), basic(0x6f8f78), rodXZ.length);
-const tips = new THREE.InstancedMesh(new THREE.CylinderGeometry(.5, .5, 9, 8), basic(0x5a5d6b), rodXZ.length);
-absorb.frustumCulled = tips.frustumCulled = false; inScene.add(absorb, tips);
-const rd = rodXZ.map(([x, z]) => ({ x, z, base: Math.random() < .12 ? .45 : 0, up: rnd(25, 70), dx: rnd(-4, 4), dz: rnd(-4, 4) }));
-const shell = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, CH + 2, 40, 6, true), basic(0x3a5068, { wireframe: true, transparent: true, opacity: .18 })); inScene.add(shell);
-const plateG = new THREE.CylinderGeometry(16.5, 16.5, 1.4, 48);
-const inFloor = new THREE.Mesh(plateG, basic(0x10141a)); inFloor.position.y = -CH / 2 - 1.2; inScene.add(inFloor);
-const inLid = new THREE.Mesh(plateG, basic(0x1b2028)); inScene.add(inLid);
-const inFire = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), addMat(0xffe6b0)); inScene.add(inFire);
-const NN = 1600, neut = makePoints(NN, THREE.AdditiveBlending); inScene.add(neut);
-const nd = Array.from({ length: NN }, () => ({ p: [rnd(28), rnd(CH), rnd(28)], v: [rnd(-9, 9), rnd(-9, 9), rnd(-9, 9)] }));
-const NB = 1000, bub = makePoints(NB, THREE.NormalBlending); inScene.add(bub);
-const bd = Array.from({ length: NB }, () => { const c = fuelXZ[Math.floor(rnd(fuelXZ.length))]; return { x: c[0] + rnd(-.5, .5), z: c[1] + rnd(-.5, .5), y: rnd(CH), v: rnd(2, 6) }; });
-const inCaps = [
-  [0, 'Nearly every control rod is pulled out. Xenon build-up was choking the reaction, so operators withdrew far more rods than the rules allowed.'],
-  [3, 'The coolant pumps slow with the turbine. Water boils into steam — and in this reactor design, more steam means more power.'],
-  [T_AZ5, 'AZ-5: the rods start down at 0.4 m/s. Their graphite tips push water out of the bottom of the core first, briefly adding power exactly where it is least stable.'],
-  [8, 'The bottom of the core runs away. Fuel overheats and shatters, channels burst, and the rods jam about a third of the way in.'],
-  [T_E1, 'Steam pressure lifts the upper shield and shears every channel. Control rods are thrown out of the core.'],
-  [T_E2, 'A second, larger explosion disperses the core. About a quarter of the graphite and fuel is ejected from the building.'],
-  [18, 'What remains is open to the sky and burning.'],
-];
-const mod = (a, n) => ((a % n) + n) % n;
-function updateInside(t, wall) {
-  const a1 = t - T_E1, a2 = t - T_E2, surge = clamp((t - T_AZ5) / (T_E1 - T_AZ5)), s2 = surge * surge;
-  const boil = clamp(t / T_AZ5) * .25 + Math.sqrt(surge) * .75;
-  let c = inCaps[0][1]; for (const [ct_, tx] of inCaps) if (t >= ct_) c = tx; $('intxt').textContent = c;
-  const ins = Math.min(surge * 1.25, 1) * .3;
-  $('inrod').textContent = a1 >= 0 ? 'RODS EJECTED' : (ins * 7).toFixed(1) + ' m of 7 m' + (surge >= .8 ? ' — JAMMED' : '');
-  $('invoid').textContent = a1 >= 0 ? '—' : Math.round(lerp(4, 100, boil)) + ' %';
-  $('intemp').textContent = a1 >= 0 ? '> 3,000 °C' : Math.round(lerp(550, 3000, s2)).toLocaleString('en-US') + ' °C';
-  // fuel channel segments
-  for (let i = 0; i < fd.length; i++) {
-    const o = fd[i]; let hh;
-    if (a1 < 0) {
-      hh = .12 + .04 * Math.sin(wall * 2 + o.ph) + s2 * lerp(1, 2.3 - 1.9 * o.yN, .8) * .75 + surge * .1 * Math.sin(wall * 20 + o.ph);
-      dummy.position.copy(o.p); dummy.position.x += Math.sin(wall * 50 + o.ph) * s2 * .08; dummy.quaternion.identity(); dummy.scale.setScalar(1);
-    } else if (o.gone) {
-      hh = 1.1; dummy.position.set(o.p.x + o.v.x * a1, o.p.y + o.v.y * a1 - 6 * a1 * a1, o.p.z + o.v.z * a1);
-      dummy.quaternion.setFromAxisAngle(o.ax, a1 * 5); dummy.scale.setScalar(a1 > 4 ? 0 : 1);
-    } else {
-      const k = Math.min(a1, 1); hh = (.95 - clamp(a1 / 30) * .35) * (.8 + .2 * Math.sin(wall * 9 + o.ph));
-      dummy.position.set(o.p.x + o.v.x * k * .05, o.p.y - k * o.yN * 2, o.p.z + o.v.z * k * .05);
-      dummy.quaternion.setFromAxisAngle(o.ax, k * o.tilt); dummy.scale.setScalar(1);
-    }
-    dummy.updateMatrix(); fuel.setMatrixAt(i, dummy.matrix);
-    if (hh < .3) col.setRGB(.05 + hh * .3, .2 + hh * .6, .6 + hh * 1.4);
-    else { const k = clamp((hh - .3) / .5), w = Math.max(0, hh - .8); col.setRGB(lerp(.14, 2.2, k) + w * 2, lerp(.38, .6, k) + w * 4, lerp(1, .1, k) + w * 3); }
-    fuel.setColorAt(i, col);
+const clock=new THREE.Clock();
+function frame(){
+  requestAnimationFrame(frame);
+  const rdt=Math.min(clock.getDelta(),.05), dt=paused?0:rdt*speed, now=performance.now()/1000;
+  t+=dt;
+
+  // --- events
+  if(!x1 && t>=T_X1){ x1=true; boom(1); blowRoof(true,1); burst(rubble,150,.8,1,3.5);
+    lidS.fly=true; lidS.vel.set(4,52,-3); lidS.rv.set(2.6,.4,1.1); }
+  if(!x2 && t>=T_X2){ x2=true; boom(2.1); blowRoof(false,1.5); burst(rubble,360,1.25,1,4.5); burst(graphite,340,1.3,.7,1.9); }
+
+  // --- pre-explosion: glow, steam jets, rumble
+  const pre = t<T_X1 ? Math.max(0,(t-T_AZ5)/(T_X1-T_AZ5)) : 1;
+  if(t>T_SURGE-1.5 && t<T_X1 && dt>0){ shake=Math.max(shake,.12+.5*(pre-.6));
+    for(let i=0;i<4;i++){ const a=R(Math.PI*2); smoke.emit(Math.cos(a)*R(14),H+1,Math.sin(a)*R(14), RS(3),R(14,30),RS(3), R(1.5,3), R(3,6), .75); } }
+
+  // --- continuous fire & plume after blasts
+  fireAmt += ((x2?1:x1?.45:0)-fireAmt)*Math.min(1,dt*1.5);
+  if(fireAmt>.01 && dt>0){
+    accF+=dt*260*fireAmt; accS+=dt*95*fireAmt;
+    while(accF>1){ accF--; const a=R(Math.PI*2), r=R(11);
+      fire.emit(Math.cos(a)*r,R(30,42),Math.sin(a)*r, RS(4),R(8,24),RS(4), R(.7,1.9), R(5,13));
+      if(R()<.06) fire.emit(RS(6),40,RS(6), RS(22),R(20,60),RS(22), R(1.5,4), R(.7,1.6),1); }
+    while(accS>1){ accS--; const a=R(Math.PI*2), r=R(12);
+      smoke.emit(Math.cos(a)*r,R(44,60),Math.sin(a)*r, RS(4),R(16,30),RS(4), R(9,17), R(11,20), R(.05,.13)); }
   }
-  fuel.instanceMatrix.needsUpdate = true; fuel.instanceColor.needsUpdate = true;
-  // control rods: absorber above, graphite displacer below, moving together
-  for (let i = 0; i < rd.length; i++) {
-    const o = rd[i], drop = Math.min(1, o.base + ins) * CH, k = Math.max(0, a1), up = k * o.up, sc = k > 3.5 ? 0 : 1;
-    dummy.quaternion.setFromAxisAngle(dummy.up.set(1, 0, 0), k * o.dx * .2); dummy.up.set(0, 1, 0); dummy.scale.setScalar(sc);
-    dummy.position.set(o.x + o.dx * k, CH - drop + up, o.z + o.dz * k); dummy.updateMatrix(); absorb.setMatrixAt(i, dummy.matrix);
-    dummy.position.set(o.x + o.dx * k, -drop + up * .8, o.z + o.dz * k); dummy.updateMatrix(); tips.setMatrixAt(i, dummy.matrix);
-  }
-  absorb.instanceMatrix.needsUpdate = tips.instanceMatrix.needsUpdate = true;
-  // lid, shell, fireball
-  inLid.position.set(Math.max(0, a1) * 3, CH / 2 + 1.2 + s2 * Math.abs(Math.sin(wall * 30)) * .3 + Math.max(0, a1) * 42, 0); inLid.rotation.x = Math.max(0, a1) * 1.1;
-  shell.material.opacity = a1 < 0 ? .18 : Math.max(.04, .18 - a1 * .1);
-  const f1 = pulse(a1, 1.3), f2 = pulse(a2, 2.2);
-  inFire.material.opacity = Math.max(f1 * f1, f2 * f2); inFire.scale.setScalar(a2 >= 0 && f2 > 0 ? 3 + a2 * 26 : 2 + Math.max(0, a1) * 30);
-  // neutrons
-  { const P = neut.geometry.attributes.position.array, S = neut.geometry.attributes.aSize.array, C = neut.geometry.attributes.aColor.array;
-    const n = a1 < 0 ? lerp(110, NN, s2) : lerp(NN, 260, clamp(a1 / 4)), sp = 1 + s2 * 2.5, ex = 1 + Math.max(0, a1) * .5;
-    for (let i = 0; i < NN; i++) { const o = nd[i];
-      const x = mod(o.p[0] + o.v[0] * wall * sp, 28) - 14, z = mod(o.p[2] + o.v[2] * wall * sp, 28) - 14;
-      if (i > n || x * x + z * z > 215) { S[i] = 0; C[i * 4 + 3] = 0; continue; }
-      P[i * 3] = x * ex; P[i * 3 + 1] = (mod(o.p[1] + o.v[1] * wall * sp, CH) - CH / 2) * ex; P[i * 3 + 2] = z * ex;
-      S[i] = .32 + s2 * .2; C[i * 4] = .5 + s2; C[i * 4 + 1] = 1; C[i * 4 + 2] = 1.7; C[i * 4 + 3] = .9; }
-    for (const a of Object.values(neut.geometry.attributes)) a.needsUpdate = true; }
-  // steam bubbles
-  { const P = bub.geometry.attributes.position.array, S = bub.geometry.attributes.aSize.array, C = bub.geometry.attributes.aColor.array;
-    const n = a1 < 0 ? lerp(30, NB, boil) : 0;
-    for (let i = 0; i < NB; i++) { const o = bd[i];
-      if (i > n) { S[i] = 0; C[i * 4 + 3] = 0; continue; }
-      P[i * 3] = o.x; P[i * 3 + 1] = mod(o.y + o.v * wall * (1 + boil * 2), CH) - CH / 2; P[i * 3 + 2] = o.z;
-      S[i] = .22 + boil * .25; C[i * 4] = C[i * 4 + 1] = C[i * 4 + 2] = .9; C[i * 4 + 3] = .55; }
-    for (const a of Object.values(bub.geometry.attributes)) a.needsUpdate = true; }
-  // camera
-  const k = clamp(a1 / 3), r = a1 < 0 ? lerp(37, 28, surge) : lerp(28, 58, k), ang = wall * .12;
-  const sh = (a1 < 0 ? s2 * .25 : (pulse(a1, 1.5) + pulse(a2, 2.2) * 1.5) * 1.4);
-  inCam.position.set(Math.cos(ang) * r + Math.sin(wall * 71) * sh, lerp(8, 24, a1 < 0 ? 0 : k) + Math.sin(wall * 93) * sh, Math.sin(ang) * r);
-  inCam.lookAt(0, a1 < 0 ? 0 : k * 8, 0);
-}
 
-// ---------- audio (all synthesized) ----------
-let AC, master, hum, humG, alarm, alarmG, fireG, white, clickBuf;
-function initAudio() {
-  if (AC) { AC.resume(); return; }
-  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
-  master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
-  const sr = AC.sampleRate;
-  white = AC.createBuffer(1, sr * 4, sr); const brown = AC.createBuffer(1, sr * 4, sr);
-  const w = white.getChannelData(0), b = brown.getChannelData(0); let last = 0;
-  for (let i = 0; i < w.length; i++) { w[i] = Math.random() * 2 - 1; last = (last + .02 * w[i]) / 1.02; b[i] = last * 3.5; }
-  clickBuf = AC.createBuffer(1, Math.floor(sr * .004), sr); const c = clickBuf.getChannelData(0);
-  for (let i = 0; i < c.length; i++) c[i] = (Math.random() * 2 - 1) * (1 - i / c.length);
-  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 320;
-  hum = AC.createOscillator(); hum.type = 'sawtooth'; hum.frequency.value = 50; humG = AC.createGain(); humG.gain.value = 0;
-  hum.connect(lp); lp.connect(humG); humG.connect(master); hum.start();
-  alarm = AC.createOscillator(); alarm.type = 'square'; alarmG = AC.createGain(); alarmG.gain.value = 0;
-  alarm.connect(alarmG); alarmG.connect(master); alarm.start();
-  const fire = AC.createBufferSource(); fire.buffer = brown; fire.loop = true; const flp = AC.createBiquadFilter(); flp.type = 'lowpass'; flp.frequency.value = 700;
-  fireG = AC.createGain(); fireG.gain.value = 0; fire.connect(flp); flp.connect(fireG); fireG.connect(master); fire.start();
-}
-function boom(big) {
-  if (!AC) return; const n = AC.currentTime, len = big ? 5 : 3.5;
-  const s = AC.createBufferSource(); s.buffer = white; const f = AC.createBiquadFilter(); f.type = 'lowpass';
-  f.frequency.setValueAtTime(big ? 1400 : 900, n); f.frequency.exponentialRampToValueAtTime(45, n + len * .7);
-  const g = AC.createGain(); g.gain.setValueAtTime(big ? 1.6 : 1.1, n); g.gain.exponentialRampToValueAtTime(.001, n + len);
-  s.connect(f); f.connect(g); g.connect(master); s.start(n); s.stop(n + len);
-  const o = AC.createOscillator(); o.frequency.setValueAtTime(big ? 85 : 70, n); o.frequency.exponentialRampToValueAtTime(22, n + 1.6);
-  const og = AC.createGain(); og.gain.setValueAtTime(1.2, n); og.gain.exponentialRampToValueAtTime(.001, n + len * .8);
-  o.connect(og); og.connect(master); o.start(n); o.stop(n + len);
-}
-function updateAudio(t, dt, wall) {
-  if (!AC) return;
-  const on = playing && !muted, a1 = t - T_E1, a2 = t - T_E2, surge = clamp((t - T_AZ5) / (T_E1 - T_AZ5));
-  master.gain.value = on ? .8 : 0;
-  humG.gain.value = a1 < 0 ? .05 + surge * .14 : 0; hum.frequency.value = 50 + surge * surge * 120;
-  alarmG.gain.value = t >= T_AZ5 && a1 < 0 ? .03 : 0; alarm.frequency.value = (wall * 2.5) % 1 < .5 ? 932 : 698;
-  fireG.gain.value = a1 < 0 ? 0 : .3;
-  if (on) {
-    let p = (a1 < 0 ? 1.2 : lerp(14, 70, clamp(a2 / 6))) * dt;
-    while (Math.random() < p) { p -= 1; const s = AC.createBufferSource(); s.buffer = clickBuf; const g = AC.createGain(); g.gain.value = .22; s.connect(g); g.connect(master); s.start(); }
-  }
-}
+  // --- lid flight
+  if(lidS.fly && !lidS.done){ lidS.vel.y+=G*dt; lid.position.addScaledVector(lidS.vel,dt);
+    lid.rotation.x+=lidS.rv.x*dt; lid.rotation.z+=lidS.rv.z*dt; lid.rotation.y+=lidS.rv.y*dt;
+    if(lidS.vel.y<0 && lid.position.y<41){ lidS.done=true; lid.position.set(3,40,-2); lid.rotation.set(1.31,.4,.12); shake=Math.max(shake,1.2); } }
+  lid.material.emissiveIntensity = x1 ? .5 : pre*pre*.25;
 
-// ---------- directed camera ----------
-const cp = new THREE.Vector3(), ct = new THREE.Vector3(); let lastShot = -1;
-const ease = (k) => k * k * (3 - 2 * k);
-const shots = [
-  [0,     (k, t) => { const a = .85 + t * .035; cp.set(Math.cos(a) * 125, 46, Math.sin(a) * 125); ct.set(-12, 26, 0); }],
-  [T_AZ5, (k) => { k = ease(k); cp.set(lerp(62, 33, k), lerp(44, 34, k), lerp(-58, -36, k)); ct.set(0, 24, 0); }],
-  [T_E1 - .05, (k) => { cp.set(118 + k * 8, 14, -92); ct.set(0, 40 + k * 14, 0); }],
-  [T_E2 - .05, (k) => { cp.set(-25 + k * 30, 34 + k * 8, 165 + k * 12); ct.set(0, 55 + k * 12, 0); }],
-  [17,    (k) => { k = ease(k); cp.set(lerp(85, 150, k), lerp(50, 95, k), lerp(-105, -175, k)); ct.set(8, lerp(60, 105, k), 0); }],
-  [25,    (k) => { const a = -.86 + k * .5; cp.set(Math.cos(a) * 240, 95, Math.sin(a) * 240); ct.set(14, 92, 0); }],
-];
-function cineCam(t, dt) {
-  let i = 0; for (let j = 0; j < shots.length; j++) if (t >= shots[j][0]) i = j;
-  const s0 = shots[i][0], s1 = i + 1 < shots.length ? shots[i + 1][0] : T_END;
-  shots[i][1](clamp((t - s0) / (s1 - s0)), t);
-  if (i !== lastShot) { camera.position.copy(cp); controls.target.copy(ct); lastShot = i; }
-  else { const a = 1 - Math.exp(-dt * 4); camera.position.lerp(cp, a); controls.target.lerp(ct, a); }
-  camera.lookAt(controls.target);
-}
-let view = 'directed', preset = null, snap = true;
-const presets = {
-  satellite: { fog: .00045, f: () => { cp.set(12, 500, 1.5); ct.set(12, 0, 0); } },
-  heli:      { fog: .0022,  f: (w) => { const a = w * .11; cp.set(Math.cos(a) * 175, 125, Math.sin(a) * 175); ct.set(4, 42, 0); } },
-  ground:    { fog: .0028,  f: () => { cp.set(128, 2.2, 122); ct.set(0, 46, 0); } },
-  core:      { fog: .0028,  f: (w) => { cp.set(27 + Math.sin(w * .2) * 3, 37, -27); ct.set(0, 25, 0); } },
-  town:      { fog: .0011,  f: () => { cp.set(-300, 16, 430); ct.set(10, 95, 0); } },
-};
-function setView(v) {
-  view = v; cine = v === 'directed'; preset = presets[v] || null; lastShot = -1; snap = true;
-  scene.fog.density = preset ? preset.fog : .0028;
-  $('sat').style.display = v === 'satellite' ? 'block' : 'none';
-  $('inui').style.display = v === 'inside' ? 'block' : 'none';
-  document.querySelectorAll('#views button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
-}
-function presetCam(dt, wall) {
-  preset.f(wall);
-  if (snap) { camera.position.copy(cp); controls.target.copy(ct); snap = false; }
-  else { const a = 1 - Math.exp(-dt * 4); camera.position.lerp(cp, a); controls.target.lerp(ct, a); }
-  camera.lookAt(controls.target);
-}
-const setCine = (c) => setView(c ? 'directed' : 'free');
-document.querySelectorAll('#views button').forEach((b, i) => { b.onclick = () => setView(b.dataset.v); });
-addEventListener('keydown', (e) => { const b = document.querySelectorAll('#views button')[+e.key - 1]; if (b) b.click(); });
-setView('directed');
-controls.addEventListener('start', () => { if (view !== 'inside') setCine(false); });
+  rubble.update(dt); graphite.update(dt);
+  graphite.it.forEach((d,i)=>{ const h=Math.max(.12,1-d.age/26)*(.8+.2*Math.sin(now*9+i)); gcol.setRGB(1.6*h,.5*h*h,.06*h*h); graphite.mesh.setColorAt(i,gcol); });
+  if(graphite.mesh.instanceColor) graphite.mesh.instanceColor.needsUpdate=true;
+  fire.update(dt); smoke.update(dt);
 
-// ---------- controls ----------
-const setPlay = (p) => { playing = p; $('play').textContent = p ? '❚❚ Pause' : '▶ Play'; if (p) { initAudio(); $('intro').style.display = 'none'; } };
-const restart = () => { t = 0; lastShot = -1; setPlay(true); };
-$('play').onclick = () => { if (!playing && t >= T_END) t = 0; setPlay(!playing); };
-$('replay').onclick = $('again').onclick = $('begin').onclick = restart;
-$('speed').onclick = () => { speed = speed === 1 ? .25 : speed === .25 ? 2 : 1; $('speed').textContent = speed + '×'; };
-$('mute').onclick = () => { muted = !muted; $('mute').textContent = muted ? '🔇 Muted' : '🔊 Sound'; };
-$('seek').oninput = (e) => { t = +e.target.value; };
-addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); $('play').click(); } });
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
-  smoke.material.uniforms.uScale.value = sparks.material.uniforms.uScale.value = innerHeight * .9;
-});
-setPlay(false);
+  // --- lights & glows
+  const fl=.85+.15*Math.sin(now*17)*Math.sin(now*7.3);
+  flash*=Math.exp(-rdt*3.2);
+  coreMat.color.setRGB(.2+pre*pre*3, .07+pre*pre*1.3, .0+pre**4*.5);
+  coreLight.intensity = pre*pre*60*fl;
+  fireLight.intensity = fireAmt*260*fl + flash*5000;
+  $('flash').style.opacity = flash*.8;
+  const bo=beam.material.uniforms; bo.o.value += ((x2 && t>T_X2+3 ? 1:0)-bo.o.value)*Math.min(1,dt*.5); bo.t.value=now;
+  if(shockT>=0){ shockT+=dt; const s=20+shockT*260*shockP**.5, o=Math.max(0,1-shockT/1.1);
+    shock.scale.setScalar(s); shock.material.opacity=o*.22; ring.scale.setScalar(s*1.3); ring.material.opacity=o*.5; if(o<=0) shockT=-1; }
+  beacon.visible = (now%1.6)<.8;
 
-const inSlow = (t) => (t > T_E1 - .1 && t < T_E1 + 1.3) || (t > T_E2 - .1 && t < T_E2 + 1.7);
-const clock = new THREE.Clock();
-renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), .05), prev = t, slow = inSlow(t) ? .3 : 1;
-  if (playing) {
-    t += dt * speed * slow;
-    if (prev < T_E1 && t >= T_E1) boom(false);
-    if (prev < T_E2 && t >= T_E2) boom(true);
-    if (t >= T_END) { t = T_END; setPlay(false); }
-    $('seek').value = t;
-  }
-  $('slow').style.opacity = playing && slow < 1 ? 1 : 0;
-  $('end').style.display = t >= T_END ? 'flex' : 'none';
-  apply(t, clock.elapsedTime);
-  updateAudio(t, dt, clock.elapsedTime);
-  if (preset) presetCam(dt, clock.elapsedTime); else if (cine) cineCam(t, dt); else controls.update();
-  if (view === 'satellite') $('satc').textContent = 'UTC+3 ' + $('clock').textContent + ' · ' + $('status').textContent;
-  const inside = view === 'inside';
-  composer.passes[0].scene = inside ? inScene : scene; composer.passes[0].camera = inside ? inCam : camera;
-  if (inside) updateInside(t, clock.elapsedTime);
-  composer.render();
-});
+  // --- camera shake
+  shake*=Math.exp(-rdt*1.6);
+  world.position.set(RS(shake),RS(shake)*.6,RS(shake));
+
+  // --- HUD
+  const sec=36+t, mm=23+Math.floor(sec/60), ss=Math.floor(sec%60);
+  $('clk').textContent=`01:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  const p=power(), pw=$('pw');
+  pw.textContent = p<0 ? 'NO SIGNAL' : Math.round(p).toLocaleString('en')+' MW';
+  pw.classList.toggle('hot', p<0||p>1000);
+  $('barf').style.width = (p<0?100:Math.min(100,Math.log10(p/150)/Math.log10(33000/150)*100))+'%';
+  let ci=0; caps.forEach((c,i)=>{ if(t>=c[0]) ci=i; });
+  if(ci!==capI){ capI=ci; $('capt').textContent=caps[ci][1]; $('capx').textContent=caps[ci][2]; }
+  $('tlf').style.width=Math.min(100,t/T_END*100)+'%';
+
+  controls.update();
+  renderer.render(scene,camera);
+}
+frame();
 </script>
 </body>
 </html>
